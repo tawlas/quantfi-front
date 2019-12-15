@@ -29,16 +29,16 @@ const defaultFlag = data.filter(obj => obj.name === 'France')[0].flag;
 
 class SignUpScreen extends React.Component {
   state = {
-    username: '',
     password: '',
+    passwordConfirm: '',
     email: '',
-    phoneNumber: '',
     fadeIn: new Animated.Value(0),
     fadeOut: new Animated.Value(1),
     isHidden: false,
     flag: defaultFlag,
     modalVisible: false,
-    authCode: ''
+    authCode: '',
+    toggleOpacity: false
   };
 
   onChangeText(key: string, value: string) {
@@ -74,16 +74,33 @@ class SignUpScreen extends React.Component {
     }
   }
   // Sign up user with AWS Amplify Auth
-  async signUp() {
-    const { username, password, email, phoneNumber } = this.state;
-    console.log(username);
+  // async goToSecondStep() {
+  //   const { email, password, passwordConfirm } = this.state;
+  //   const username = email;
+  //   if (password !== passwordConfirm) {
+  //     Alert.alert(
+  //       "Veuillez rentrer deux mots de passe identiques s'il vous plait"
+  //     );
+  //     return;
+  //   }
+
+  //   this.props.navigation.navigate('SignUp2', { email, password });
+  // }
+
+  async goToSecondStep() {
+    const { password, email, passwordConfirm } = this.state;
+    // console.log(username);
     // rename variable to conform with Amplify Auth field phone attribute
-    const phone_number = phoneNumber;
+    // const phone_number = phoneNumber;
+    const username = email;
+    const family_name = 'watt';
+    const first_name = 'alassane';
+    const pn = '11';
     try {
       await Auth.signUp({
         username,
         password,
-        attributes: { email, phone_number }
+        attributes: { email, pn, family_name, first_name }
       });
       console.log('sign up successful!');
       Alert.alert('Enter the confirmation code you received.');
@@ -98,40 +115,43 @@ class SignUpScreen extends React.Component {
     }
   }
 
-  // Confirm users and redirect them to the SignIn page
-  async confirmSignUp() {
-    const { username, authCode } = this.state;
-    await Auth.confirmSignUp(username, authCode)
-      .then(() => {
-        this.props.navigation.navigate('SignIn');
-        console.log('Confirm sign up successful');
-      })
-      .catch(err => {
-        if (!err.message) {
-          console.log('Error when entering confirmation code: ', err);
-          Alert.alert('Error when entering confirmation code: ', err);
-        } else {
-          console.log('Error when entering confirmation code: ', err.message);
-          Alert.alert('Error when entering confirmation code: ', err.message);
-        }
-      });
-  }
+  // async goToSecondStep() {
+  //   const { email, password, passwordConfirm } = this.state;
+  //   const username = email;
+  // if (password !== passwordConfirm) {
+  //   Alert.alert(
+  //     "Veuillez rentrer deux mots de passe identiques s'il vous plait"
+  //   );
+  //   return;
+  // }
+  //   try {
+  //     await Auth.signUp({
+  //       username,
+  //       password,
+  //       attributes: { email }
+  //     });
+  //     // console.log('sign up successful!');
+  //     this.props.navigation.navigate('SignUp2', { email, password });
+  //   } catch (err) {
+  //     if (!err.message) {
+  //       console.log('Error when signing up: ', err);
+  //       Alert.alert('Error when signing up: ', err);
+  //     } else {
+  //       console.log('Error when signing up: ', err.message);
+  //       Alert.alert('Error when signing up: ', err.message);
+  //     }
+  //   }
 
-  // Resend code if not received already
-  async resendSignUp() {
-    const { username } = this.state;
-    await Auth.resendSignUp(username)
-      .then(() => console.log('Confirmation code resent successfully'))
-      .catch(err => {
-        if (!err.message) {
-          console.log('Error requesting new confirmation code: ', err);
-          Alert.alert('Error requesting new confirmation code: ', err);
-        } else {
-          console.log('Error requesting new confirmation code: ', err.message);
-          Alert.alert('Error requesting new confirmation code: ', err.message);
-        }
-      });
-  }
+  // Auth.verifyCurrentUserAttribute(email)
+  //   .then(() => {
+  //     this.props.navigation.navigate('SignUp2', { email, password });
+  //   })
+  //   .catch(e => {
+  //     Alert.alert(
+  //       "Erreur lors de l'envoi du code de confirmation. Veuillez ressayer s'il vous plaît."
+  //     );
+  //     console.log(e);
+  //   });
 
   componentDidMount() {
     this.fadeIn();
@@ -156,6 +176,7 @@ class SignUpScreen extends React.Component {
   render() {
     let { fadeOut, fadeIn, isHidden, flag } = this.state;
     const countryData = data;
+    // if {}
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar />
@@ -229,7 +250,7 @@ class SignUpScreen extends React.Component {
                       onEndEditing={() => this.fadeIn()}
                     />
                   </Item>
-                  {/*  password section  */}
+                  {/*  confirm password section  */}
                   <Item rounded style={styles.itemStyle}>
                     <Icon active name="lock" style={styles.iconStyle} />
                     <Input
@@ -241,137 +262,24 @@ class SignUpScreen extends React.Component {
                       autoCorrect={false}
                       secureTextEntry={true}
                       // ref={c => this.SecondInput = c}
-                      ref="SecondInput"
-                      onSubmitEditing={event => {
-                        this.refs.ThirdInput._root.focus();
-                      }}
+                      ref="ThirdInput"
+                      // onSubmitEditing={event => {
+                      //   this.refs.ThirdInput._root.focus();
+                      // }}
                       onChangeText={value =>
-                        this.onChangeText('password', value)
+                        this.onChangeText('passwordConfirm', value)
                       }
                       onFocus={() => this.fadeOut()}
                       onEndEditing={() => this.fadeIn()}
                     />
                   </Item>
-
-                  {/* phone section  */}
-                  <Item rounded style={styles.itemStyle}>
-                    <Icon active name="call" style={styles.iconStyle} />
-                    {/* country flag */}
-                    <View>
-                      <Text>{flag}</Text>
-                    </View>
-                    {/* open modal */}
-                    <Icon
-                      active
-                      name="md-arrow-dropdown"
-                      style={[styles.iconStyle, { marginLeft: 0 }]}
-                      onPress={() => this.showModal()}
-                    />
-                    <Input
-                      style={styles.input}
-                      placeholder="+33766554433"
-                      placeholderTextColor="#adb4bc"
-                      keyboardType={'phone-pad'}
-                      returnKeyType="done"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      secureTextEntry={false}
-                      ref="FourthInput"
-                      value={this.state.phoneNumber}
-                      onChangeText={val =>
-                        this.onChangeText('phoneNumber', val)
-                      }
-                      onFocus={() => this.fadeOut()}
-                      onEndEditing={() => this.fadeIn()}
-                    />
-                    {/* Modal for country code and flag */}
-                    <Modal
-                      animationType="slide" // fade
-                      transparent={false}
-                      visible={this.state.modalVisible}
-                    >
-                      <View style={{ flex: 1 }}>
-                        <View
-                          style={{
-                            flex: 10,
-                            paddingTop: 80,
-                            backgroundColor: '#1671B3'
-                          }}
-                        >
-                          <FlatList
-                            data={countryData}
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={({ item }) => (
-                              <TouchableWithoutFeedback
-                                onPress={() => this.getCountry(item.name)}
-                              >
-                                <View
-                                  style={[
-                                    styles.countryStyle,
-                                    {
-                                      flexDirection: 'row',
-                                      alignItems: 'center',
-                                      justifyContent: 'space-between'
-                                    }
-                                  ]}
-                                >
-                                  <Text style={{ fontSize: 45 }}>
-                                    {item.flag}
-                                  </Text>
-                                  <Text style={{ fontSize: 20, color: '#fff' }}>
-                                    {item.name} ({item.dial_code})
-                                  </Text>
-                                </View>
-                              </TouchableWithoutFeedback>
-                            )}
-                          />
-                        </View>
-                        <TouchableOpacity
-                          onPress={() => this.hideModal()}
-                          style={styles.closeButtonStyle}
-                        >
-                          <Text style={styles.textStyle}>Fermer</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </Modal>
-                  </Item>
-                  {/* End of phone input */}
+                  {/* End of confirm password input */}
                   <TouchableOpacity
                     style={styles.buttonStyle}
-                    onPress={() => this.signUp()}
+                    onPress={() => this.goToSecondStep()}
+                    disabled={false}
                   >
-                    <Text style={styles.buttonText}>Créer mon compte</Text>
-                  </TouchableOpacity>
-                  {/* code confirmation section  */}
-                  <Item rounded style={styles.itemStyle}>
-                    <Icon active name="md-apps" style={styles.iconStyle} />
-                    <Input
-                      style={styles.input}
-                      placeholder="Confirmation code"
-                      placeholderTextColor="#adb4bc"
-                      keyboardType={'numeric'}
-                      returnKeyType="done"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      secureTextEntry={false}
-                      onChangeText={value =>
-                        this.onChangeText('authCode', value)
-                      }
-                      onFocus={() => this.fadeOut()}
-                      onEndEditing={() => this.fadeIn()}
-                    />
-                  </Item>
-                  <TouchableOpacity
-                    style={styles.buttonStyle}
-                    onPress={() => this.confirmSignUp()}
-                  >
-                    <Text style={styles.buttonText}>Confirm Sign Up</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.buttonStyle}
-                    onPress={() => this.resendSignUp()}
-                  >
-                    <Text style={styles.buttonText}>Resend code</Text>
+                    <Text style={styles.buttonText}>Suivant</Text>
                   </TouchableOpacity>
                 </View>
               </Container>

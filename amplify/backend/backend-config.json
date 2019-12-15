@@ -1,6 +1,6 @@
 {
 	"auth": {
-		"quantfi1d99677c": {
+		"quantfi": {
 			"service": "Cognito",
 			"providerPlugin": "awscloudformation",
 			"dependsOn": []

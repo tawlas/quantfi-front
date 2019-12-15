@@ -11,6 +11,7 @@
     "@types/react-redux": "^7.1.5",
     "aws-amplify": "^2.2.0",
     "aws-amplify-react-native": "^2.2.3",
+    "aws-sdk": "^2.590.0",
     "expo": "~36.0.0",
     "native-base": "^2.13.8",
     "react": "~16.9.0",

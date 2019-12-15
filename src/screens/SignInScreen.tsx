@@ -1,3 +1,4 @@
+const AWS = require('aws-sdk');
 import React from 'react';
 import {
   StyleSheet,
@@ -15,11 +16,9 @@ import {
   Image
 } from 'react-native';
 import { Container, Item, Input, Icon } from 'native-base';
-import { connect } from 'react-redux';
 // AWS Amplify
 import Auth from '@aws-amplify/auth';
 
-import * as actions from '../actions';
 // Load the app logo
 const logo = require('../images/logo.png');
 
@@ -27,6 +26,7 @@ class SignInScreen extends React.Component {
   state = {
     username: '',
     password: '',
+    email: '',
     fadeIn: new Animated.Value(0),
     fadeOut: new Animated.Value(0),
     isHidden: false
@@ -53,24 +53,90 @@ class SignInScreen extends React.Component {
     }).start();
     this.setState({ isHidden: false });
   }
+  deleteUser(email: string) {
+    let params = {
+      UserPoolId: 'us-west-2_BpSJP2kis',
+      Username: email
+    };
+    return new Promise((resolve, reject) => {
+      AWS.config.update({
+        region: 'us-west-2',
+        accessKeyId: 'AKIAJY2HEL5XDQPSAYEA',
+        secretAccessKey: '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'
+      });
+      let cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
+      cognitoidentityserviceprovider.adminDeleteUser(params, (err, data) => {
+        if (err) {
+          // console.log('error', err);
+          reject(err);
+        } else {
+          // console.log('data', data);
+          resolve(data);
+        }
+      });
+    });
+  }
+
+  // async signIn() {
+  //   const { email } = this.state;
+  //   console.log(email);
+  //   try {
+  //     const response = await this.deleteUser(email);
+  //     console.log(response);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
 
   // Sign in users with Auth
   async signIn() {
-    const { username, password } = this.state;
-    console.log(username);
-    await Auth.signIn(username, password)
+    const { email, password } = this.state;
+    await Auth.signIn(email, password)
       .then(user => {
+        console.log(user);
         this.setState({ user });
         this.props.navigation.navigate('AuthLoading');
       })
-      .catch(err => {
-        if (!err.message) {
-          console.log('Error when signing in: ', err);
-          Alert.alert('Error when signing in: ', err);
+      .catch(async err => {
+        if (
+          err.code === 'NotAuthorizedException' ||
+          err.code === 'UserNotFoundException'
+        ) {
+          Alert.alert(
+            "Email et/ou mot de passe incorect(s): Veuillez réssayer s'il vous plaît"
+          );
+        } else if (err.code === 'UserNotConfirmedException') {
+          try {
+            await this.deleteUser(email);
+            Alert.alert(
+              "Email et/ou mot de passe incorect(s): Veuillez réssayer s'il vous plaît"
+            );
+          } catch (err) {
+            if (!err.message) {
+              console.log('Error when signing in: ', err);
+              Alert.alert('Error when signing in: ', err);
+            } else {
+              console.log('Error when signing in: ', err.message);
+              Alert.alert('Error when signing in: ', err.message);
+            }
+          }
         } else {
-          console.log('Error when signing in: ', err.message);
-          Alert.alert('Error when signing in: ', err.message);
+          if (!err.message) {
+            console.log('Error when signing in: ', err);
+            Alert.alert('Error when signing in: ', err);
+          } else {
+            console.log('Error when signing in: ', err.message);
+            Alert.alert('Error when signing in: ', err.message);
+          }
+          console.log(err);
         }
+        // if (!err.message) {
+        //   console.log('Error when signing in: ', err);
+        //   Alert.alert('Error when signing in: ', err);
+        // } else {
+        //   console.log('Error when signing in: ', err.message);
+        //   Alert.alert('Error when signing in: ', err.message);
+        // }
       });
   }
 
@@ -114,7 +180,7 @@ class SignInScreen extends React.Component {
                       autoCapitalize="none"
                       autoCorrect={false}
                       secureTextEntry={false}
-                      ref="ThirdInput"
+                      ref="FirstInput"
                       onSubmitEditing={event => {
                         this.refs.SecondInput._root.focus();
                       }}
@@ -218,10 +284,4 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = state => {
-  return {
-    auth: state.auth
-  };
-};
-
-export default connect(mapStateToProps, actions)(SignInScreen);
+export default SignInScreen;

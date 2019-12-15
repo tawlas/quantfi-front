@@ -16,6 +16,9 @@ import reducers from './src/reducers';
 import AuthLoadingScreen from './src/screens/AuthLoadingScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
+import SignUpScreen1 from './src/screens/SignUpScreen1';
+import SignUpScreen2 from './src/screens/SignUpScreen2';
+import SignUpScreen3 from './src/screens/SignUpScreen3';
 import SignInScreen from './src/screens/SignInScreen';
 import ForgetPasswordScreen from './src/screens/ForgetPasswordScreen';
 import HomeScreen from './src/screens/HomeScreen';
@@ -31,8 +34,26 @@ const AuthStackNavigator = createStackNavigator({
       header: null
     })
   },
+  // SignUp: {
+  //   screen: SignUpScreen,
+  //   navigationOptions: () => ({
+  //     title: `Créer un nouveau compte`
+  //   })
+  // },
   SignUp: {
-    screen: SignUpScreen,
+    screen: SignUpScreen1,
+    navigationOptions: () => ({
+      title: `Créer un nouveau compte`
+    })
+  },
+  SignUp2: {
+    screen: SignUpScreen2,
+    navigationOptions: () => ({
+      title: `Créer un nouveau compte`
+    })
+  },
+  SignUp3: {
+    screen: SignUpScreen3,
     navigationOptions: () => ({
       title: `Créer un nouveau compte`
     })

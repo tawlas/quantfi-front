@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "quantfi1d99677c_identitypool_1d99677c",
+    "identityPoolName": "quantfi_idpool",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "quantf1d99677c",
-    "userPoolName": "quantfi1d99677c_userpool_1d99677c",
+    "resourceNameTruncated": "quantf6483ace8",
+    "userPoolName": "quantfi_userpool",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -18,7 +18,9 @@
     "passwordPolicyMinLength": 8,
     "passwordPolicyCharacters": [],
     "requiredAttributes": [
-        "email"
+        "email",
+        "family_name",
+        "given_name"
     ],
     "userpoolClientGenerateSecret": true,
     "userpoolClientRefreshTokenValidity": 30,
@@ -28,10 +30,20 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "quantf1d99677c_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "quantf6483ace8_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "resourceName": "quantfi1d99677c",
+    "useDefault": "manual",
     "authSelections": "identityPoolAndUserPool",
+    "resourceName": "quantfi",
+    "thirdPartyAuth": false,
+    "usernameAttributes": [
+        "email"
+    ],
+    "userPoolGroups": false,
+    "adminQueries": false,
+    "triggers": "{}",
+    "hostedUI": false,
+    "userPoolGroupList": [],
     "authRoleArn": {
         "Fn::GetAtt": [
             "AuthRole",
@@ -44,10 +56,9 @@
             "Arn"
         ]
     },
-    "useDefault": "default",
-    "usernameAttributes": [
-        "email"
-    ],
-    "userPoolGroupList": [],
+    "parentStack": {
+        "Ref": "AWS::StackId"
+    },
+    "permissions": [],
     "dependsOn": []
 }
