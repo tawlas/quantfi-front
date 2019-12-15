@@ -1,0 +1,20 @@
+{
+    "quantfi": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-quantfi-quantfi-190320-authRole",
+            "UnauthRoleArn": "arn:aws:iam::403260168400:role/amplify-quantfi-quantfi-190320-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::403260168400:role/amplify-quantfi-quantfi-190320-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "amplify-quantfi-quantfi-190320-deployment",
+            "UnauthRoleName": "amplify-quantfi-quantfi-190320-unauthRole",
+            "StackName": "amplify-quantfi-quantfi-190320",
+            "StackId": "arn:aws:cloudformation:us-west-2:403260168400:stack/amplify-quantfi-quantfi-190320/f6cfa4a0-1e58-11ea-ae4d-02bc161bfc0c",
+            "AmplifyAppId": "d375q05s1kpokc"
+        },
+        "categories": {
+            "auth": {
+                "quantfi1d99677c": {}
+            }
+        }
+    }
+}
