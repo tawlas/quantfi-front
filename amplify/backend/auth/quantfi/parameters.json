@@ -1,6 +1,6 @@
 {
     "identityPoolName": "quantfi_idpool",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "quantf6483ace8",
     "userPoolName": "quantfi_userpool",
     "autoVerifiedAttributes": [

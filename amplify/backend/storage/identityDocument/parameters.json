@@ -1,0 +1,31 @@
+{
+    "bucketName": "quantfi",
+    "authPolicyName": "s3_amplify_5e5e9e96",
+    "unauthPolicyName": "s3_amplify_5e5e9e96",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "selectedGuestPermissions": [
+        "s3:PutObject"
+    ],
+    "selectedAuthenticatedPermissions": [
+        "s3:PutObject"
+    ],
+    "s3PermissionsAuthenticatedPublic": "s3:PutObject",
+    "s3PublicPolicy": "Public_policy_c01c7e0a",
+    "s3PermissionsAuthenticatedUploads": "s3:PutObject",
+    "s3UploadsPolicy": "Uploads_policy_c01c7e0a",
+    "s3PermissionsAuthenticatedProtected": "s3:PutObject",
+    "s3ProtectedPolicy": "Protected_policy_6426a382",
+    "s3PermissionsAuthenticatedPrivate": "s3:PutObject",
+    "s3PrivatePolicy": "Private_policy_6426a382",
+    "AuthenticatedAllowList": "DISALLOW",
+    "s3ReadPolicy": "read_policy_c01c7e0a",
+    "s3PermissionsGuestPublic": "s3:PutObject",
+    "s3PermissionsGuestUploads": "s3:PutObject",
+    "GuestAllowList": "DISALLOW",
+    "triggerFunction": "NONE"
+}

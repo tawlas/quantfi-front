@@ -12,13 +12,19 @@ import {
   Alert,
   Modal,
   FlatList,
-  Animated
+  Animated,
+  Button
 } from 'react-native';
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 
 import { Container, Item, Input, Icon } from 'native-base';
 import { connect } from 'react-redux';
 // AWS Amplify
 import Auth from '@aws-amplify/auth';
+import { Storage } from 'aws-amplify';
+import { S3Album } from 'aws-amplify-react-native';
 
 import * as actions from '../actions';
 import data from '../countriesData';
@@ -44,7 +50,9 @@ class SignUpScreen extends React.Component {
     authCode: '',
     sendCodeDisabled: true,
     resendCodeDisabled: true,
-    createAccountDisabled: true
+    createAccountDisabled: true,
+    hasCameraPermission: null,
+    image: null
   };
 
   onChangeText(key: string, value: string) {
@@ -155,6 +163,15 @@ class SignUpScreen extends React.Component {
       });
   }
 
+  uploadFile = evt => {
+    const file = evt.target.files[0];
+    const name = file.name;
+
+    Storage.put(name, file).then(() => {
+      this.setState({ file: name });
+    });
+  };
+
   componentDidMount() {
     this.fadeIn();
   }
@@ -174,10 +191,92 @@ class SignUpScreen extends React.Component {
     }).start();
     this.setState({ isHidden: false });
   }
+  // handleChoosePhoto = () => {
+  //   const options = {};
+  //   ImagePicker.launchImageLibrary(options, response => {
+  //     console.log('response #########', response);
+  //   });
+  // };
+  handleChoosePhoto = async (awsKey = 'mon-doc', access = 'public') => {
+    const { email } = this.state;
+    // let result = await ImagePicker.launchImageLibraryAsync({
+    //   allowsEditing: true
+    //   // aspect: [4, 3]
+    // });
+    let result = await DocumentPicker.getDocumentAsync();
+
+    console.log('result', result);
+    const fileUri = result.uri;
+
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function() {
+        reject(new TypeError('Network request failed'));
+      };
+      xhr.responseType = 'blob';
+      xhr.open('GET', fileUri, true);
+      xhr.send(null);
+    });
+    const { name, type } = blob._data;
+    const options = {
+      level: access,
+      contentType: type
+    };
+    const key = awsKey;
+    try {
+      const result = await Storage.put(key, blob, options);
+      return {
+        access,
+        key: result.key
+      };
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  // handleChoosePhoto = async () => {
+  //   const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+  //   const { email } = this.state;
+  //   this.setState({ hasCameraPermission: status === 'granted' });
+  // let result = await ImagePicker.launchImageLibraryAsync({
+  //   allowsEditing: true
+  //   // aspect: [4, 3]
+  // });
+  // console.log('result', result);
+
+  //   if (!result.cancelled) {
+  //     const response = await fetch(result.uri);
+
+  //     const blob = await response.blob();
+
+  //     Storage.put(email, blob, {
+  //       contentType: 'image/jpeg'
+  //     })
+  //       .then(() => {
+  //         console.log('blob', blob);
+  //         this.setState({ image: email });
+  //       })
+  //       .catch(err => {
+  //         console.log(err);
+  //       });
+  //     // Storage.put(email, result.uri)
+  //     //   .then(() => {
+  //     //     this.setState({ image: email });
+  //     //   })
+  //     //   .catch(err => {
+  //     //     console.log(err);
+  //     //   });
+  //     // this.setState({ image: result.uri });
+  //   }
+  // };
 
   render() {
     let { fadeOut, fadeIn, isHidden, flag } = this.state;
     const countryData = data;
+    // <PhotoPicker onPick={data => console.log(data)} />;
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar />
@@ -207,6 +306,18 @@ class SignUpScreen extends React.Component {
               </View> */}
               <Container style={styles.infoContainer}>
                 <View style={styles.container}>
+                  <View>
+                    {/* <Text> Pick a file</Text> */}
+                    <Button
+                      style={{
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                      title="Choisir une image"
+                      onPress={this.handleChoosePhoto}
+                    />
+                    {/* <S3Album level="private" path="" /> */}
+                  </View>
                   {/* email section */}
                   <Item rounded style={styles.itemStyle}>
                     <Icon active name="person" style={styles.iconStyle} />
