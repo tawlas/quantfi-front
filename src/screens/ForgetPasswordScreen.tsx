@@ -140,7 +140,9 @@ export default class ForgetPasswordScreen extends React.Component {
                     style={styles.buttonStyle}
                     onPress={() => this.forgotPassword()}
                   >
-                    <Text style={styles.buttonText}>Send Code</Text>
+                    <Text style={styles.buttonText}>
+                      Envoyer le code de vérification
+                    </Text>
                   </TouchableOpacity>
                   {/* the New password section  */}
                   <Item rounded style={styles.itemStyle}>
@@ -168,7 +170,7 @@ export default class ForgetPasswordScreen extends React.Component {
                     <Icon active name="md-apps" style={styles.iconStyle} />
                     <Input
                       style={styles.input}
-                      placeholder="Confirmation code"
+                      placeholder="Code de confirmation"
                       placeholderTextColor="#adb4bc"
                       keyboardType={'numeric'}
                       returnKeyType="done"
@@ -188,7 +190,7 @@ export default class ForgetPasswordScreen extends React.Component {
                       style={styles.buttonText}
                       onPress={() => this.forgotPasswordSubmit()}
                     >
-                      Confirm the new password
+                      Changer le mot de passe
                     </Text>
                   </TouchableOpacity>
                 </View>

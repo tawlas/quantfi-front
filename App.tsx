@@ -24,6 +24,7 @@ import SignInScreen from './src/screens/SignInScreen';
 import ForgetPasswordScreen from './src/screens/ForgetPasswordScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
+import ProfilScreen from './src/screens/ProfilScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import { configurations, options } from './src/tabConfig';
 
@@ -87,34 +88,34 @@ AppTabNavigator.navigationOptions = ({ navigation }) => {
 
 const AppStackNavigator = createStackNavigator({
   Header: {
-    screen: AppTabNavigator,
+    screen: AppTabNavigator
     // Set the header icon
-    navigationOptions: ({ navigation }) => ({
-      headerLeft: (
-        <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-          <View style={{ paddingHorizontal: 10 }}>
-            <Ionicons name="md-menu" size={24} />
-          </View>
-        </TouchableOpacity>
-      )
-    })
+    // navigationOptions: ({ navigation }) => ({
+    //   // headerLeft: (
+    //   //   <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+    //   //     <View style={{ paddingHorizontal: 10 }}>
+    //   //       <Ionicons name="md-menu" size={24} />
+    //   //     </View>
+    //   //   </TouchableOpacity>
+    //   )
+    // })
   }
 });
 
 // App stack for the drawer
-const AppDrawerNavigator = createDrawerNavigator({
-  Tabs: AppStackNavigator,
-  Home: HomeScreen,
-  Profile: ProfileScreen,
-  Settings: SettingsScreen
-});
+// const AppDrawerNavigator = createDrawerNavigator({
+//   Tabs: AppStackNavigator,
+//   Home: HomeScreen,
+//   Profile: ProfileScreen,
+//   Settings: SettingsScreen
+// });
 
 const navigator = createSwitchNavigator(
   {
     // screen: name
     AuthLoading: AuthLoadingScreen,
     Auth: AuthStackNavigator,
-    App: AppDrawerNavigator
+    App: AppStackNavigator
   },
   {
     initialRouteName: 'AuthLoading'

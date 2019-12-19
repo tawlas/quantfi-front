@@ -48,9 +48,7 @@ class SignUpScreen extends React.Component {
     flag: defaultFlag,
     modalVisible: false,
     authCode: '',
-    sendCodeDisabled: true,
-    resendCodeDisabled: true,
-    createAccountDisabled: true,
+    codeSent: false,
     hasCameraPermission: null,
     image: null
   };
@@ -116,6 +114,7 @@ class SignUpScreen extends React.Component {
         attributes: { email, phone_number, given_name, family_name }
       });
       console.log('sign up successful!');
+      this.setState({ codeSent: true });
       Alert.alert('Enter the confirmation code you received.');
     } catch (err) {
       if (!err.message) {
@@ -128,13 +127,52 @@ class SignUpScreen extends React.Component {
     }
   }
 
+  async signUpIn() {
+    const { email, password } = this.state;
+    await Auth.signIn(email, password)
+      .then(user => {
+        console.log(user);
+        this.setState({ user });
+      })
+      .catch(async err => {
+        if (!err.message) {
+          console.log('Error when signing in: ', err);
+          Alert.alert('Error when signing in: ', err);
+        } else {
+          console.log('Error when signing in: ', err.message);
+          Alert.alert('Error when signing in: ', err.message);
+        }
+      });
+  }
+
   // Confirm users and redirect them to the SignIn page
+  // confirmSignUp() {
+  //   const { email, password } = this.state;
+  //   this.signUpIn();
+  //   this.props.navigation.navigate('SignUp2', { email, password });
+  // }
+
   async confirmSignUp() {
-    const { username, authCode } = this.state;
+    const { email, authCode, password } = this.state;
+    const username = email;
     await Auth.confirmSignUp(username, authCode)
       .then(() => {
-        this.props.navigation.navigate('SignIn');
+        // this.props.navigation.navigate('SignIn');
+        // this.props.navigation.navigate('SignUp2');
         console.log('Confirm sign up successful');
+      })
+      .catch(err => {
+        if (!err.message) {
+          console.log('Error when entering confirmation code: ', err);
+          Alert.alert('Error when entering confirmation code: ', err);
+        } else {
+          console.log('Error when entering confirmation code: ', err.message);
+          Alert.alert('Error when entering confirmation code: ', err.message);
+        }
+      });
+    await this.signUpIn()
+      .then(() => {
+        this.props.navigation.navigate('SignUp2', { email, password });
       })
       .catch(err => {
         if (!err.message) {
@@ -149,7 +187,8 @@ class SignUpScreen extends React.Component {
 
   // Resend code if not received already
   async resendSignUp() {
-    const { username } = this.state;
+    const { email } = this.state;
+    const username = email;
     await Auth.resendSignUp(username)
       .then(() => console.log('Confirmation code resent successfully'))
       .catch(err => {
@@ -163,18 +202,10 @@ class SignUpScreen extends React.Component {
       });
   }
 
-  uploadFile = evt => {
-    const file = evt.target.files[0];
-    const name = file.name;
-
-    Storage.put(name, file).then(() => {
-      this.setState({ file: name });
-    });
-  };
-
   componentDidMount() {
     this.fadeIn();
   }
+
   fadeIn() {
     Animated.timing(this.state.fadeIn, {
       toValue: 1,
@@ -191,19 +222,14 @@ class SignUpScreen extends React.Component {
     }).start();
     this.setState({ isHidden: false });
   }
-  // handleChoosePhoto = () => {
-  //   const options = {};
-  //   ImagePicker.launchImageLibrary(options, response => {
-  //     console.log('response #########', response);
-  //   });
-  // };
+
   handleChoosePhoto = async (awsKey = 'mon-doc', access = 'public') => {
     const { email } = this.state;
-    // let result = await ImagePicker.launchImageLibraryAsync({
-    //   allowsEditing: true
-    //   // aspect: [4, 3]
-    // });
-    let result = await DocumentPicker.getDocumentAsync();
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true
+      // aspect: [4, 3]
+    });
+    // let result = await DocumentPicker.getDocumentAsync();
 
     console.log('result', result);
     const fileUri = result.uri;
@@ -237,45 +263,22 @@ class SignUpScreen extends React.Component {
     }
   };
 
-  // handleChoosePhoto = async () => {
-  //   const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-  //   const { email } = this.state;
-  //   this.setState({ hasCameraPermission: status === 'granted' });
-  // let result = await ImagePicker.launchImageLibraryAsync({
-  //   allowsEditing: true
-  //   // aspect: [4, 3]
-  // });
-  // console.log('result', result);
-
-  //   if (!result.cancelled) {
-  //     const response = await fetch(result.uri);
-
-  //     const blob = await response.blob();
-
-  //     Storage.put(email, blob, {
-  //       contentType: 'image/jpeg'
-  //     })
-  //       .then(() => {
-  //         console.log('blob', blob);
-  //         this.setState({ image: email });
-  //       })
-  //       .catch(err => {
-  //         console.log(err);
-  //       });
-  //     // Storage.put(email, result.uri)
-  //     //   .then(() => {
-  //     //     this.setState({ image: email });
-  //     //   })
-  //     //   .catch(err => {
-  //     //     console.log(err);
-  //     //   });
-  //     // this.setState({ image: result.uri });
-  //   }
-  // };
-
   render() {
-    let { fadeOut, fadeIn, isHidden, flag } = this.state;
+    let {
+      fadeOut,
+      fadeIn,
+      isHidden,
+      flag,
+      email,
+      passwordConfirm,
+      password,
+      authCode
+    } = this.state;
     const countryData = data;
+    const sendCodeEnabled =
+      email !== '' && password !== '' && passwordConfirm !== '';
+    const createAccountEnabled = sendCodeEnabled && authCode !== '';
+
     // <PhotoPicker onPick={data => console.log(data)} />;
     return (
       <SafeAreaView style={styles.container}>
@@ -291,7 +294,7 @@ class SignUpScreen extends React.Component {
           >
             <View style={styles.container}>
               {/* App Logo */}
-              {/* <View style={styles.logoContainer}>
+              <View style={styles.logoContainer}>
                 {isHidden ? (
                   <Animated.Image
                     source={logo}
@@ -303,67 +306,9 @@ class SignUpScreen extends React.Component {
                     style={{ opacity: fadeOut, width: 110.46, height: 117 }}
                   />
                 )}
-              </View> */}
+              </View>
               <Container style={styles.infoContainer}>
                 <View style={styles.container}>
-                  <View>
-                    {/* <Text> Pick a file</Text> */}
-                    <Button
-                      style={{
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                      title="Choisir une image"
-                      onPress={this.handleChoosePhoto}
-                    />
-                    {/* <S3Album level="private" path="" /> */}
-                  </View>
-                  {/* email section */}
-                  <Item rounded style={styles.itemStyle}>
-                    <Icon active name="person" style={styles.iconStyle} />
-                    <Input
-                      style={styles.input}
-                      placeholder="Prénom"
-                      placeholderTextColor="#adb4bc"
-                      keyboardType={'email-address'}
-                      returnKeyType="next"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      secureTextEntry={false}
-                      ref="FirstInput"
-                      onSubmitEditing={event => {
-                        this.refs.SecondInput._root.focus();
-                      }}
-                      onChangeText={value =>
-                        this.onChangeText('given_name', value)
-                      }
-                      onFocus={() => this.fadeOut()}
-                      onEndEditing={() => this.fadeIn()}
-                    />
-                  </Item>
-                  {/* email section */}
-                  <Item rounded style={styles.itemStyle}>
-                    <Icon active name="person" style={styles.iconStyle} />
-                    <Input
-                      style={styles.input}
-                      placeholder="Nom"
-                      placeholderTextColor="#adb4bc"
-                      keyboardType={'email-address'}
-                      returnKeyType="next"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      secureTextEntry={false}
-                      ref="SecondInput"
-                      onSubmitEditing={event => {
-                        this.refs.ThirdInput._root.focus();
-                      }}
-                      onChangeText={value =>
-                        this.onChangeText('family_name', value)
-                      }
-                      onFocus={() => this.fadeOut()}
-                      onEndEditing={() => this.fadeIn()}
-                    />
-                  </Item>
                   {/* email section */}
                   <Item rounded style={styles.itemStyle}>
                     <Icon active name="mail" style={styles.iconStyle} />
@@ -431,105 +376,32 @@ class SignUpScreen extends React.Component {
                       onEndEditing={() => this.fadeIn()}
                     />
                   </Item>
-
-                  {/* phone section  */}
-                  <Item rounded style={styles.itemStyle}>
-                    <Icon active name="call" style={styles.iconStyle} />
-                    {/* country flag */}
-                    <View>
-                      <Text>{flag}</Text>
-                    </View>
-                    {/* open modal */}
-                    <Icon
-                      active
-                      name="md-arrow-dropdown"
-                      style={[styles.iconStyle, { marginLeft: 0 }]}
-                      onPress={() => this.showModal()}
-                    />
-                    <Input
-                      style={styles.input}
-                      placeholder="+33766554433"
-                      placeholderTextColor="#adb4bc"
-                      keyboardType={'phone-pad'}
-                      returnKeyType="done"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      secureTextEntry={false}
-                      ref="SixthInput"
-                      value={this.state.phoneNumber}
-                      onChangeText={val =>
-                        this.onChangeText('phoneNumber', val)
-                      }
-                      onFocus={() => this.fadeOut()}
-                      onEndEditing={() => this.fadeIn()}
-                    />
-                    {/* Modal for country code and flag */}
-                    <Modal
-                      animationType="slide" // fade
-                      transparent={false}
-                      visible={this.state.modalVisible}
+                  {this.state.codeSent === true ? (
+                    <TouchableOpacity
+                      style={styles.buttonStyle}
+                      onPress={() => this.resendSignUp()}
+                      disabled={!sendCodeEnabled}
                     >
-                      <View style={{ flex: 1 }}>
-                        <View
-                          style={{
-                            flex: 10,
-                            paddingTop: 80,
-                            backgroundColor: '#1671B3'
-                          }}
-                        >
-                          <FlatList
-                            data={countryData}
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={({ item }) => (
-                              <TouchableWithoutFeedback
-                                onPress={() => this.getCountry(item.name)}
-                              >
-                                <View
-                                  style={[
-                                    styles.countryStyle,
-                                    {
-                                      flexDirection: 'row',
-                                      alignItems: 'center',
-                                      justifyContent: 'space-between'
-                                    }
-                                  ]}
-                                >
-                                  <Text style={{ fontSize: 45 }}>
-                                    {item.flag}
-                                  </Text>
-                                  <Text style={{ fontSize: 20, color: '#fff' }}>
-                                    {item.name} ({item.dial_code})
-                                  </Text>
-                                </View>
-                              </TouchableWithoutFeedback>
-                            )}
-                          />
-                        </View>
-                        <TouchableOpacity
-                          onPress={() => this.hideModal()}
-                          style={styles.closeButtonStyle}
-                        >
-                          <Text style={styles.textStyle}>Fermer</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </Modal>
-                  </Item>
-                  {/* End of phone input */}
-                  <TouchableOpacity
-                    style={styles.buttonStyle}
-                    onPress={() => this.signUp()}
-                    disabled={this.state.sendCodeDisabled}
-                  >
-                    <Text style={styles.buttonText}>
-                      Recevoir le code de confirmation
-                    </Text>
-                  </TouchableOpacity>
+                      <Text style={styles.buttonText}>Renvoyer le code</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.buttonStyle}
+                      onPress={() => this.signUp()}
+                      disabled={!sendCodeEnabled}
+                    >
+                      <Text style={styles.buttonText}>
+                        Recevoir le code de confirmation
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+
                   {/* code confirmation section  */}
                   <Item rounded style={styles.itemStyle}>
                     <Icon active name="md-apps" style={styles.iconStyle} />
                     <Input
                       style={styles.input}
-                      placeholder="Confirmation code"
+                      placeholder="Code de confirmation"
                       placeholderTextColor="#adb4bc"
                       keyboardType={'numeric'}
                       returnKeyType="done"
@@ -546,16 +418,9 @@ class SignUpScreen extends React.Component {
                   <TouchableOpacity
                     style={styles.buttonStyle}
                     onPress={() => this.confirmSignUp()}
-                    disabled={this.state.createAccountDisabled}
+                    disabled={!createAccountEnabled}
                   >
-                    <Text style={styles.buttonText}>Créer mon compte</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.buttonStyle}
-                    onPress={() => this.resendSignUp()}
-                    disabled={this.state.resendCodeDisabled}
-                  >
-                    <Text style={styles.buttonText}>Renvoyer le code</Text>
+                    <Text style={styles.buttonText}>Suivant</Text>
                   </TouchableOpacity>
                 </View>
               </Container>

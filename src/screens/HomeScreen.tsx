@@ -5,7 +5,7 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Screen name</Text>
+        <Text style={styles.textStyle}>Dashboard</Text>
       </View>
     );
   }
@@ -14,8 +14,13 @@ export default class HomeScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  textStyle: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    padding: 10
   }
 });

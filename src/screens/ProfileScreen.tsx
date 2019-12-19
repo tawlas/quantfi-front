@@ -5,7 +5,7 @@ export default class ProfileScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.textStyle}>Profile</Text>
+        <Text style={styles.textStyle}>Investissements</Text>
       </View>
     );
   }
@@ -14,14 +14,13 @@ export default class ProfileScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#5059ae',
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center'
   },
   textStyle: {
     fontWeight: 'bold',
     fontSize: 18,
-    padding: 10,
-    color: '#fff'
+    padding: 10
   }
 });

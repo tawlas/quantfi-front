@@ -15,50 +15,28 @@ import {
 import { Container, Item, Input, Icon } from 'native-base';
 // AWS Amplify
 import Auth from '@aws-amplify/auth';
+import SettingsList from 'react-native-settings-list';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface Props {
   navigation: any;
 }
 
-export default class SettingsScreen extends React.Component<Props> {
-  state = {
-    password1: '',
-    password2: ''
-  };
-  onChangeText(key, value) {
-    this.setState({ [key]: value });
-  }
-  // Change user password for the app
-  changePassword = async () => {
-    const { password1, password2 } = this.state;
-    await Auth.currentAuthenticatedUser()
-      .then(user => {
-        return Auth.changePassword(user, password1, password2);
-      })
-      .then(data => console.log('Password changed successfully', data))
-      .catch(err => {
-        if (!err.message) {
-          console.log('Error changing password: ', err);
-          Alert.alert('Error changing password: ', err);
-        } else {
-          console.log('Error changing password: ', err.message);
-          Alert.alert('Error changing password: ', err.message);
-        }
-      });
-  };
+export default class SettingsScreen extends React.Component {
+  state = { switchValue: false };
   // Sign out from the app
   signOutAlert = async () => {
     await Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out from the app?',
+      'Se déconnecter',
+      "Êtes vous sûr(e) de vouloir vous déconnecter de l'application ?",
       [
         {
-          text: 'Cancel',
-          onPress: () => console.log('Canceled'),
+          text: 'Annuler',
+          onPress: () => console.log('Cancelled'),
           style: 'cancel'
         },
         // Calling signOut
-        { text: 'OK', onPress: () => this.signOut() }
+        { text: 'Oui', onPress: () => this.signOut() }
       ],
       { cancelable: false }
     );
@@ -73,102 +51,110 @@ export default class SettingsScreen extends React.Component<Props> {
       .catch(err => console.log('Error while signing out!', err));
   };
   render() {
+    this.onValueChange = this.onValueChange.bind(this);
+    var bgColor = '#DCE3F4';
     return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar />
-        <KeyboardAvoidingView
-          style={styles.container}
-          behavior="padding"
-          enabled
+      <View style={{ backgroundColor: '#ffffff', flex: 1 }}>
+        <View
+          style={{
+            borderBottomWidth: 1,
+            backgroundColor: '#1671B3',
+            borderColor: '#1671B3',
+            marginTop: 30
+          }}
         >
-          <TouchableWithoutFeedback
-            style={styles.container}
-            onPress={Keyboard.dismiss}
+          <Text
+            style={{
+              // alignSelf: 'center',
+              marginVertical: 20,
+              marginLeft: 10,
+              justifyContent: 'center',
+              fontWeight: 'bold',
+              fontSize: 30,
+              color: 'white'
+            }}
           >
-            <View style={styles.container}>
-              {/*Infos*/}
-              <Container style={styles.infoContainer}>
-                <View style={styles.container}>
-                  <View
-                    style={[
-                      styles.buttonStyle,
-                      { borderRadius: 4, marginBottom: 20 }
-                    ]}
-                  >
-                    <Text style={styles.buttonText}>Change password</Text>
-                  </View>
-                  {/* Old password */}
-                  <Item rounded style={styles.itemStyle}>
-                    <Icon active name="lock" style={styles.iconStyle} />
-                    <Input
-                      style={styles.input}
-                      placeholder="Old password"
-                      placeholderTextColor="#adb4bc"
-                      returnKeyType="next"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      secureTextEntry={true}
-                      onSubmitEditing={event => {
-                        this.refs.SecondInput._root.focus();
-                      }}
-                      onChangeText={value =>
-                        this.onChangeText('password1', value)
-                      }
-                    />
-                  </Item>
-                  {/* New password */}
-                  <Item rounded style={styles.itemStyle}>
-                    <Icon active name="lock" style={styles.iconStyle} />
-                    <Input
-                      style={styles.input}
-                      placeholder="New password"
-                      placeholderTextColor="#adb4bc"
-                      returnKeyType="go"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      secureTextEntry={true}
-                      ref="SecondInput"
-                      onChangeText={value =>
-                        this.onChangeText('password2', value)
-                      }
-                    />
-                  </Item>
-                  <TouchableOpacity
-                    style={styles.buttonStyle}
-                    onPress={this.changePassword}
-                  >
-                    <Text style={styles.buttonText}>Submit</Text>
-                  </TouchableOpacity>
-                  <View
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      paddingBottom: 100
-                    }}
-                  />
-                  <TouchableOpacity
-                    style={[
-                      styles.buttonStyle,
-                      {
-                        flexDirection: 'row',
-                        justifyContent: 'center'
-                      }
-                    ]}
-                    onPress={() => this.signOutAlert()}
-                  >
-                    <Icon
-                      name="md-power"
-                      style={{ color: '#fff', paddingRight: 10 }}
-                    />
-                    <Text style={styles.buttonText}>Sign out</Text>
-                  </TouchableOpacity>
-                </View>
-              </Container>
-            </View>
-          </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
+            Paul Hiriart
+          </Text>
+        </View>
+        <View style={{ backgroundColor: '#ffffff', flex: 1 }}>
+          <SettingsList borderColor="#1671B3" defaultItemSize={50}>
+            <SettingsList.Header headerStyle={{ marginTop: 15 }} />
+            <SettingsList.Item
+              icon={
+                <Icon
+                  active
+                  name="person"
+                  style={{ ...styles.imageStyle, color: '#ffdc2b' }}
+                />
+              }
+              hasNavArrow={true}
+              title="Profil"
+              onPress={() => {
+                this.props.navigation.navigate('Profil');
+              }}
+            />
+            <SettingsList.Item
+              icon={<Icon active name="card" style={styles.imageStyle} />}
+              title="Carte Bancaire"
+              // titleInfo=""
+              // titleInfoStyle={styles.titleInfoStyle}
+              onPress={() => Alert.alert('Route to Wifi Page')}
+            />
+            <SettingsList.Item
+              icon={
+                <Icon
+                  active
+                  name="lock"
+                  style={{ ...styles.imageStyle, color: '#2cb890' }}
+                />
+              }
+              title="Sécurité"
+              onPress={() => Alert.alert('Route to Wifi Page')}
+            />
+            <SettingsList.Header headerStyle={{ marginTop: 15 }} />
+            <SettingsList.Item
+              icon={
+                <Icon
+                  active
+                  name="log-out"
+                  style={{ ...styles.imageStyle, color: '#ff7700' }}
+                />
+              }
+              title="Se déconnecter"
+              // titleInfo=""
+              // titleInfoStyle={styles.titleInfoStyle}
+              onPress={() => this.signOutAlert()}
+            />
+            <SettingsList.Item
+              icon={
+                <Icon
+                  active
+                  name="md-help-circle-outline"
+                  style={{ ...styles.imageStyle, color: '#2cb890' }}
+                />
+              }
+              title="Aide"
+              onPress={() => Alert.alert('Route to Wifi Page')}
+            />
+            <SettingsList.Item
+              icon={
+                <Icon
+                  active
+                  name="heart"
+                  style={{ ...styles.imageStyle, color: '#ff0000' }}
+                />
+              }
+              title="Recommander à un ami"
+              onPress={() => Alert.alert('Route to Wifi Page')}
+            />
+          </SettingsList>
+        </View>
+      </View>
     );
+  }
+  onValueChange(value) {
+    this.setState({ switchValue: value });
   }
 }
 
@@ -178,6 +164,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     justifyContent: 'center',
     flexDirection: 'column'
+  },
+  imageStyle: {
+    marginLeft: 15,
+    alignSelf: 'center',
+    height: 30,
+    width: 30,
+    color: '#1671B3'
+  },
+  titleInfoStyle: {
+    fontSize: 16,
+    color: '#8e8e93'
   },
   input: {
     flex: 1,

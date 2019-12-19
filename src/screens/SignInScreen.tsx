@@ -130,13 +130,6 @@ class SignInScreen extends React.Component {
           }
           console.log(err);
         }
-        // if (!err.message) {
-        //   console.log('Error when signing in: ', err);
-        //   Alert.alert('Error when signing in: ', err);
-        // } else {
-        //   console.log('Error when signing in: ', err.message);
-        //   Alert.alert('Error when signing in: ', err.message);
-        // }
       });
   }
 

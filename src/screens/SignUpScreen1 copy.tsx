@@ -39,7 +39,7 @@ class SignUpScreen extends React.Component {
     password: '',
     passwordConfirm: '',
     email: '',
-    phone_number: '',
+    phoneNumber: '',
     given_name: '',
     family_name: '',
     fadeIn: new Animated.Value(0),
@@ -52,9 +52,7 @@ class SignUpScreen extends React.Component {
     resendCodeDisabled: true,
     createAccountDisabled: true,
     hasCameraPermission: null,
-    image: null,
-    blob: null,
-    options: null
+    image: null
   };
 
   onChangeText(key: string, value: string) {
@@ -83,11 +81,70 @@ class SignUpScreen extends React.Component {
         obj => obj.name === country
       )[0].flag;
       // Set data from user choice of country
-      this.setState({ phone_number: countryCode, flag: countryFlag });
+      this.setState({ phoneNumber: countryCode, flag: countryFlag });
       await this.hideModal();
     } catch (err) {
       console.log(err);
     }
+  }
+  // Sign up user with AWS Amplify Auth
+  async signUp() {
+    const {
+      password,
+      email,
+      phoneNumber,
+      passwordConfirm,
+      given_name,
+      family_name
+    } = this.state;
+    const username = email;
+    // const family_name = 'watt';
+    // const given_name = 'alassane';
+
+    // rename variable to conform with Amplify Auth field phone attribute
+    const phone_number = phoneNumber;
+    if (password !== passwordConfirm) {
+      Alert.alert(
+        "Veuillez rentrer deux mots de passe identiques s'il vous plait"
+      );
+      return;
+    }
+    try {
+      await Auth.signUp({
+        username,
+        password,
+        attributes: { email, phone_number, given_name, family_name }
+      });
+      console.log('sign up successful!');
+      Alert.alert('Enter the confirmation code you received.');
+    } catch (err) {
+      if (!err.message) {
+        console.log('Error when signing up: ', err);
+        Alert.alert('Error when signing up: ', err);
+      } else {
+        console.log('Error when signing up: ', err.message);
+        Alert.alert('Error when signing up: ', err.message);
+      }
+    }
+  }
+
+  // Confirm users and redirect them to the SignIn page
+  async confirmSignUp() {
+    const { username, authCode } = this.state;
+    await Auth.confirmSignUp(username, authCode)
+      .then(() => {
+        this.props.navigation.navigate('SignIn');
+        console.log('Confirm sign up successful');
+      })
+      .catch(err => {
+        if (!err.message) {
+          console.log('Error when entering confirmation code: ', err);
+          Alert.alert('Error when entering confirmation code: ', err);
+        } else {
+          console.log('Error when entering confirmation code: ', err.message);
+          Alert.alert('Error when entering confirmation code: ', err.message);
+        }
+      });
   }
 
   // Resend code if not received already
@@ -105,6 +162,15 @@ class SignUpScreen extends React.Component {
         }
       });
   }
+
+  uploadFile = evt => {
+    const file = evt.target.files[0];
+    const name = file.name;
+
+    Storage.put(name, file).then(() => {
+      this.setState({ file: name });
+    });
+  };
 
   componentDidMount() {
     this.fadeIn();
@@ -125,110 +191,92 @@ class SignUpScreen extends React.Component {
     }).start();
     this.setState({ isHidden: false });
   }
+  // handleChoosePhoto = () => {
+  //   const options = {};
+  //   ImagePicker.launchImageLibrary(options, response => {
+  //     console.log('response #########', response);
+  //   });
+  // };
+  handleChoosePhoto = async (awsKey = 'mon-doc', access = 'public') => {
+    const { email } = this.state;
+    // let result = await ImagePicker.launchImageLibraryAsync({
+    //   allowsEditing: true
+    //   // aspect: [4, 3]
+    // });
+    let result = await DocumentPicker.getDocumentAsync();
 
-  handleChoosePhoto = async (access = 'private') => {
-    const { email } = this.props.navigation.state.params;
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    this.setState({ hasCameraPermission: status === 'granted' });
-    // TODO continue logic
+    console.log('result', result);
+    const fileUri = result.uri;
 
-    if (this.state.hasCameraPermission === false) {
-      return Alert.alert(
-        "L'accès à la galerie a été refusé. Veuillez l'autoriser pour continuer."
-      );
-    }
-    try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: true
-      });
-      // let result = await DocumentPicker.getDocumentAsync();
-      if (result.cancelled) {
-        Alert.alert('Téléversement annulé. Veuillez réessayer encore.');
-        return;
-      }
-      console.log('result', result);
-      const fileUri = result.uri;
-
-      const blob = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = function() {
-          resolve(xhr.response);
-        };
-        xhr.onerror = function() {
-          reject(new TypeError('Network request failed'));
-        };
-        xhr.responseType = 'blob';
-        xhr.open('GET', fileUri, true);
-        xhr.send(null);
-      });
-      const { name, type } = blob._data;
-      const options = {
-        level: access,
-        contentType: type
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        resolve(xhr.response);
       };
-      this.setState({ blob, options });
-      // const key = email;
-      // try {
-      //   const result = await Storage.put(key, blob, options);
-      //   return {
-      //     access,
-      //     key: result.key
-      //   };
-      // } catch (err) {
-      //   throw err;
-      // }
-    } catch (err) {
-      Alert.alert('Erreur: Veuillez ressayer encore');
-      return;
-    }
-  };
-
-  async storeImage(blob, options) {
-    const { email } = this.props.navigation.state.params;
-    const key = email;
+      xhr.onerror = function() {
+        reject(new TypeError('Network request failed'));
+      };
+      xhr.responseType = 'blob';
+      xhr.open('GET', fileUri, true);
+      xhr.send(null);
+    });
+    const { name, type } = blob._data;
+    const options = {
+      level: access,
+      contentType: type
+    };
+    const key = awsKey;
     try {
       const result = await Storage.put(key, blob, options);
       return {
+        access,
         key: result.key
       };
     } catch (err) {
       throw err;
     }
-  }
-  signOut = async () => {
-    await Auth.signOut()
-      .then(() => {
-        console.log('Sign out complete');
-        this.props.navigation.navigate('AuthLoading');
-      })
-      .catch(err => console.log('Error while signing out!', err));
   };
-  async onClickNext() {
-    const { blob, options } = this.state;
-    await this.storeImage(blob, options);
-    Alert.alert('Compte crée avec succès. Veuillez vous connecter à présent');
-    this.signOut();
-    // this.props.navigation.navigate('SignUp3', {});
-  }
+
+  // handleChoosePhoto = async () => {
+  //   const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+  //   const { email } = this.state;
+  //   this.setState({ hasCameraPermission: status === 'granted' });
+  // let result = await ImagePicker.launchImageLibraryAsync({
+  //   allowsEditing: true
+  //   // aspect: [4, 3]
+  // });
+  // console.log('result', result);
+
+  //   if (!result.cancelled) {
+  //     const response = await fetch(result.uri);
+
+  //     const blob = await response.blob();
+
+  //     Storage.put(email, blob, {
+  //       contentType: 'image/jpeg'
+  //     })
+  //       .then(() => {
+  //         console.log('blob', blob);
+  //         this.setState({ image: email });
+  //       })
+  //       .catch(err => {
+  //         console.log(err);
+  //       });
+  //     // Storage.put(email, result.uri)
+  //     //   .then(() => {
+  //     //     this.setState({ image: email });
+  //     //   })
+  //     //   .catch(err => {
+  //     //     console.log(err);
+  //     //   });
+  //     // this.setState({ image: result.uri });
+  //   }
+  // };
 
   render() {
-    const {
-      fadeOut,
-      fadeIn,
-      isHidden,
-      flag,
-      given_name,
-      family_name,
-      phone_number,
-      blob
-    } = this.state;
+    let { fadeOut, fadeIn, isHidden, flag } = this.state;
     const countryData = data;
     // <PhotoPicker onPick={data => console.log(data)} />;
-    const nextEnabled =
-      given_name !== '' &&
-      family_name !== '' &&
-      phone_number !== '' &&
-      blob !== null;
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar />
@@ -260,7 +308,14 @@ class SignUpScreen extends React.Component {
                 <View style={styles.container}>
                   <View>
                     {/* <Text> Pick a file</Text> */}
-
+                    <Button
+                      style={{
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                      title="Choisir une image"
+                      onPress={this.handleChoosePhoto}
+                    />
                     {/* <S3Album level="private" path="" /> */}
                   </View>
                   {/* email section */}
@@ -309,6 +364,73 @@ class SignUpScreen extends React.Component {
                       onEndEditing={() => this.fadeIn()}
                     />
                   </Item>
+                  {/* email section */}
+                  <Item rounded style={styles.itemStyle}>
+                    <Icon active name="mail" style={styles.iconStyle} />
+                    <Input
+                      style={styles.input}
+                      placeholder="Email"
+                      placeholderTextColor="#adb4bc"
+                      keyboardType={'email-address'}
+                      returnKeyType="next"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      secureTextEntry={false}
+                      ref="ThirdInput"
+                      onSubmitEditing={event => {
+                        this.refs.FourthInput._root.focus();
+                      }}
+                      onChangeText={value => this.onChangeText('email', value)}
+                      onFocus={() => this.fadeOut()}
+                      onEndEditing={() => this.fadeIn()}
+                    />
+                  </Item>
+                  {/*  password section  */}
+                  <Item rounded style={styles.itemStyle}>
+                    <Icon active name="lock" style={styles.iconStyle} />
+                    <Input
+                      style={styles.input}
+                      placeholder="Mot de Passe"
+                      placeholderTextColor="#adb4bc"
+                      returnKeyType="next"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      secureTextEntry={true}
+                      // ref={c => this.SecondInput = c}
+                      ref="FourthInput"
+                      onSubmitEditing={event => {
+                        this.refs.FifthInput._root.focus();
+                      }}
+                      onChangeText={value =>
+                        this.onChangeText('password', value)
+                      }
+                      onFocus={() => this.fadeOut()}
+                      onEndEditing={() => this.fadeIn()}
+                    />
+                  </Item>
+                  {/*  confirm password section  */}
+                  <Item rounded style={styles.itemStyle}>
+                    <Icon active name="lock" style={styles.iconStyle} />
+                    <Input
+                      style={styles.input}
+                      placeholder="Confirmer le mot de passe"
+                      placeholderTextColor="#adb4bc"
+                      returnKeyType="next"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      secureTextEntry={true}
+                      // ref={c => this.SecondInput = c}
+                      ref="FifthInput"
+                      onSubmitEditing={event => {
+                        this.refs.SixthInput._root.focus();
+                      }}
+                      onChangeText={value =>
+                        this.onChangeText('passwordConfirm', value)
+                      }
+                      onFocus={() => this.fadeOut()}
+                      onEndEditing={() => this.fadeIn()}
+                    />
+                  </Item>
 
                   {/* phone section  */}
                   <Item rounded style={styles.itemStyle}>
@@ -334,9 +456,9 @@ class SignUpScreen extends React.Component {
                       autoCorrect={false}
                       secureTextEntry={false}
                       ref="SixthInput"
-                      value={this.state.phone_number}
+                      value={this.state.phoneNumber}
                       onChangeText={val =>
-                        this.onChangeText('phone_number', val)
+                        this.onChangeText('phoneNumber', val)
                       }
                       onFocus={() => this.fadeOut()}
                       onEndEditing={() => this.fadeIn()}
@@ -395,24 +517,45 @@ class SignUpScreen extends React.Component {
                   {/* End of phone input */}
                   <TouchableOpacity
                     style={styles.buttonStyle}
-                    onPress={() => this.handleChoosePhoto()}
+                    onPress={() => this.signUp()}
+                    disabled={this.state.sendCodeDisabled}
                   >
                     <Text style={styles.buttonText}>
-                      Téléverser un document d'identité
+                      Recevoir le code de confirmation
                     </Text>
                   </TouchableOpacity>
-                  {blob ? (
-                    <Text style={{ marginBottom: 10 }}>{blob._data.name}</Text>
-                  ) : null}
+                  {/* code confirmation section  */}
+                  <Item rounded style={styles.itemStyle}>
+                    <Icon active name="md-apps" style={styles.iconStyle} />
+                    <Input
+                      style={styles.input}
+                      placeholder="Confirmation code"
+                      placeholderTextColor="#adb4bc"
+                      keyboardType={'numeric'}
+                      returnKeyType="done"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      secureTextEntry={false}
+                      onChangeText={value =>
+                        this.onChangeText('authCode', value)
+                      }
+                      onFocus={() => this.fadeOut()}
+                      onEndEditing={() => this.fadeIn()}
+                    />
+                  </Item>
                   <TouchableOpacity
-                    style={{
-                      ...styles.buttonStyle,
-                      backgroundColor: nextEnabled ? '#1671B3' : '#DCDCDC'
-                    }}
-                    onPress={() => this.onClickNext()}
-                    disabled={!nextEnabled}
+                    style={styles.buttonStyle}
+                    onPress={() => this.confirmSignUp()}
+                    disabled={this.state.createAccountDisabled}
                   >
                     <Text style={styles.buttonText}>Créer mon compte</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.buttonStyle}
+                    onPress={() => this.resendSignUp()}
+                    disabled={this.state.resendCodeDisabled}
+                  >
+                    <Text style={styles.buttonText}>Renvoyer le code</Text>
                   </TouchableOpacity>
                 </View>
               </Container>
