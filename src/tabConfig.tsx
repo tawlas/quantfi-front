@@ -1,7 +1,7 @@
 import React from 'react';
 import HomeScreen from './screens/HomeScreen';
 import SettingsScreen from './screens/SettingsScreen';
-import ProfileScreen from './screens/ProfileScreen';
+import InvestmentListScreen from './screens/InvestmentListScreen';
 import ProfilScreen from './screens/ProfilScreen';
 import CreditCardScreen from './screens/CreditCardScreen';
 import SecurityScreen from './screens/SecurityScreen';
@@ -48,7 +48,7 @@ export const configurations = {
     }
   },
   Investissements: {
-    screen: ProfileScreen,
+    screen: InvestmentListScreen,
     navigationOptions: {
       tabBarLabel: 'Investissements',
       tabBarIcon: ({ tintColor }) => (

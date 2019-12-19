@@ -9,10 +9,13 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { createDrawerNavigator } from 'react-navigation-drawer';
+import { setNavigator } from './src/navigationRef';
 import { Ionicons } from '@expo/vector-icons';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import reducers from './src/reducers';
+import { ApplicationProvider, Layout } from '@ui-kitten/components';
+import { mapping, light as lightTheme } from '@eva-design/eva';
 
 import AuthLoadingScreen from './src/screens/AuthLoadingScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
@@ -25,7 +28,7 @@ import ForgetPasswordScreen from './src/screens/ForgetPasswordScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import ProfilScreen from './src/screens/ProfilScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
+import InvestmentListScreen from './src/screens/InvestmentListScreen';
 import { configurations, options } from './src/tabConfig';
 
 // Auth stack
@@ -106,7 +109,7 @@ const AppStackNavigator = createStackNavigator({
 // const AppDrawerNavigator = createDrawerNavigator({
 //   Tabs: AppStackNavigator,
 //   Home: HomeScreen,
-//   Profile: ProfileScreen,
+//   InvestmentList: InvestmentListScreen,
 //   Settings: SettingsScreen
 // });
 
@@ -133,8 +136,14 @@ const styles = StyleSheet.create({
 const App = createAppContainer(navigator);
 export default function Root() {
   return (
-    <Provider store={createStore(reducers)}>
-      <App />
-    </Provider>
+    <ApplicationProvider mapping={mapping} theme={lightTheme}>
+      <Provider store={createStore(reducers)}>
+        <App
+          ref={navigator => {
+            setNavigator(navigator);
+          }}
+        />
+      </Provider>
+    </ApplicationProvider>
   );
 }
