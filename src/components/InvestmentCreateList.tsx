@@ -12,17 +12,12 @@ import { Header, Body } from './InvestmentCreateListItem';
 import DropDownItem from '../components/DropDown';
 import Item from '../components/DropDown';
 // import DropDownItem from 'react-native-drop-down-item';
-import RadioForm, {
-  RadioButton,
-  RadioButtonInput,
-  RadioButtonLabel
-} from 'react-native-simple-radio-button';
 
 const IC_ARR_DOWN = require('../icons/ic_arr_down.png');
 const IC_ARR_UP = require('../icons/ic_arr_up.png');
 
 type Props = {};
-export default class InvestmentCreateList extends Component<Props> {
+export default class InvestmentCreateList extends Component {
   state = {
     investment: null,
     value: null,
