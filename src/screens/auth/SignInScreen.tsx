@@ -20,7 +20,7 @@ import { Container, Item, Input, Icon } from 'native-base';
 import Auth from '@aws-amplify/auth';
 
 // Load the app logo
-const logo = require('../images/logo.png');
+const logo = require('../../images/logo.png');
 
 class SignInScreen extends React.Component {
   state = {

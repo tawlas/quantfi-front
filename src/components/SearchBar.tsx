@@ -11,9 +11,6 @@ const SearchBar = () => {
         autoCorrect={false}
         style={styles.inputStyle}
         placeholder="Recherche"
-        // value={term}
-        // onChangeText={onTermChange}
-        // onEndEditing={onTermSubmit}
       />
     </View>
   );

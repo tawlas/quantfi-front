@@ -1,20 +1,20 @@
 import React from 'react';
-import HomeScreen from './screens/HomeScreen';
-import SettingsScreen from './screens/SettingsScreen';
-import InvestmentListScreen from './screens/InvestmentListScreen';
-import ProfilScreen from './screens/ProfilScreen';
-import CreditCardScreen from './screens/CreditCardScreen';
-import SecurityScreen from './screens/SecurityScreen';
+import HomeScreen from './screens/home/HomeScreen';
+import SettingsScreen from './screens/settings/SettingsScreen';
+import InvestmentListScreen from './screens/investments/InvestmentListScreen';
+import ProfilScreen from './screens/settings/ProfilScreen';
+import CreditCardScreen from './screens/settings/CreditCardScreen';
+import SecurityScreen from './screens/settings/SecurityScreen';
 import { Icon } from 'native-base';
 import { createStackNavigator } from 'react-navigation-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import InvestmentCreateScreen from './screens/investments/InvestmentCreateScreen';
 
 const SettingsStackNavigator = createStackNavigator({
   Settings: {
     screen: SettingsScreen,
     navigationOptions: () => ({
-      // title: 'Settings'
-      header: null
+      title: 'Settings'
     })
   },
   Profil: {
@@ -37,9 +37,33 @@ const SettingsStackNavigator = createStackNavigator({
   }
 });
 
+const InvestmentStackNavigator = createStackNavigator({
+  InvestmentList: {
+    screen: InvestmentListScreen,
+    navigationOptions: () => ({
+      title: 'Investissements'
+    })
+  },
+  InvestmentCreate: {
+    screen: InvestmentCreateScreen,
+    navigationOptions: () => ({
+      title: 'Nouvel Investissement'
+    })
+  }
+});
+
+const HomeStackNavigator = createStackNavigator({
+  Home: {
+    screen: HomeScreen,
+    navigationOptions: () => ({
+      title: 'Accueil'
+    })
+  }
+});
+
 export const configurations = {
   Accueil: {
-    screen: HomeScreen,
+    screen: HomeStackNavigator,
     navigationOptions: {
       tabBarLabel: 'Accueil',
       tabBarIcon: ({ tintColor }) => (
@@ -48,11 +72,10 @@ export const configurations = {
     }
   },
   Investissements: {
-    screen: InvestmentListScreen,
+    screen: InvestmentStackNavigator,
     navigationOptions: {
       tabBarLabel: 'Investissements',
       tabBarIcon: ({ tintColor }) => (
-        // <Icon name="ios-person" style={{ fontSize: 26, color: tintColor }} />
         <MaterialCommunityIcons
           name="finance"
           style={{ fontSize: 26, color: tintColor }}
@@ -84,7 +107,8 @@ export const options = {
     inactiveTintColor: '#a8abaf',
     style: {
       backgroundColor: '#f0f0f0',
-      paddingBottom: 0
+      paddingBottom: 0,
+      marginTop: 2
     },
     labelStyle: {
       fontSize: 9.5,

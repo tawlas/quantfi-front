@@ -1,8 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity
+} from 'react-native';
 import { Feather, Ionicons } from '@expo/vector-icons';
-import SearchBar from '../components/SearchBar';
-import List from '../components/List';
+import SearchBar from '../../components/SearchBar';
+import List from '../../components/List';
 
 export default class InvestmentListScreen extends React.Component {
   render() {
@@ -18,10 +24,13 @@ export default class InvestmentListScreen extends React.Component {
             <Text style={styles.textStyle}>Mes Investissements</Text>
             <List />
           </View>
-          <View style={styles.invest}>
+          <TouchableOpacity
+            style={styles.invest}
+            onPress={() => this.props.navigation.navigate('InvestmentCreate')}
+          >
             <Ionicons name="md-add-circle" style={styles.icon} />
             <Text style={{ fontSize: 16, left: 3 }}>Investir</Text>
-          </View>
+          </TouchableOpacity>
         </ScrollView>
       </>
     );

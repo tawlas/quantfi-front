@@ -26,9 +26,9 @@ import Auth from '@aws-amplify/auth';
 import { Storage } from 'aws-amplify';
 import { S3Album } from 'aws-amplify-react-native';
 
-import * as actions from '../actions';
-import data from '../countriesData';
-const logo = require('../images/logo.png');
+import * as actions from '../../actions';
+import data from '../../countriesData';
+const logo = require('../../images/logo.png');
 
 // Default render of country flag
 const defaultFlag = data.filter(obj => obj.name === 'France')[0].flag;

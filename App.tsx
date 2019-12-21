@@ -17,18 +17,18 @@ import reducers from './src/reducers';
 import { ApplicationProvider, Layout } from '@ui-kitten/components';
 import { mapping, light as lightTheme } from '@eva-design/eva';
 
-import AuthLoadingScreen from './src/screens/AuthLoadingScreen';
+import AuthLoadingScreen from './src/screens/auth/AuthLoadingScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
-import SignUpScreen from './src/screens/SignUpScreen';
-import SignUpScreen1 from './src/screens/SignUpScreen1';
-import SignUpScreen2 from './src/screens/SignUpScreen2';
-import SignUpScreen3 from './src/screens/SignUpScreen3';
-import SignInScreen from './src/screens/SignInScreen';
-import ForgetPasswordScreen from './src/screens/ForgetPasswordScreen';
-import HomeScreen from './src/screens/HomeScreen';
-import SettingsScreen from './src/screens/SettingsScreen';
-import ProfilScreen from './src/screens/ProfilScreen';
-import InvestmentListScreen from './src/screens/InvestmentListScreen';
+import SignUpScreen from './src/screens/auth/SignUpScreen';
+import SignUpScreen1 from './src/screens/auth/SignUpScreen1';
+import SignUpScreen2 from './src/screens/auth/SignUpScreen2';
+import SignUpScreen3 from './src/screens/auth/SignUpScreen3';
+import SignInScreen from './src/screens/auth/SignInScreen';
+import ForgetPasswordScreen from './src/screens/auth/ForgetPasswordScreen';
+import HomeScreen from './src/screens/home/HomeScreen';
+import SettingsScreen from './src/screens/settings/SettingsScreen';
+import ProfilScreen from './src/screens/settings/ProfilScreen';
+import InvestmentListScreen from './src/screens/investments/InvestmentListScreen';
 import { configurations, options } from './src/tabConfig';
 
 // Auth stack
@@ -81,13 +81,13 @@ const AuthStackNavigator = createStackNavigator({
 const AppTabNavigator = createMaterialTopTabNavigator(configurations, options);
 
 // Making the common header title dynamic in AppTabNavigator
-AppTabNavigator.navigationOptions = ({ navigation }) => {
-  let { routeName } = navigation.state.routes[navigation.state.index];
-  let headerTitle = routeName;
-  return {
-    headerTitle
-  };
-};
+// AppTabNavigator.navigationOptions = ({ navigation }) => {
+//   let { routeName } = navigation.state.routes[navigation.state.index];
+//   let headerTitle = routeName;
+//   return {
+//     headerTitle
+//   };
+// };
 
 const AppStackNavigator = createStackNavigator({
   Header: {
@@ -118,7 +118,7 @@ const navigator = createSwitchNavigator(
     // screen: name
     AuthLoading: AuthLoadingScreen,
     Auth: AuthStackNavigator,
-    App: AppStackNavigator
+    App: AppTabNavigator
   },
   {
     initialRouteName: 'AuthLoading'
