@@ -26,7 +26,7 @@ const ListCompositeItemShowcase = () => {
         return (
           <View style={{ flex: 1 }}>
             <TouchableOpacity
-            // onPress={() => navigate('ResultsShow', { id: item })}
+              onPress={() => navigate('InvestmentDetail', { id: item })}
             >
               <InvestmentListAccessory data={item} />
             </TouchableOpacity>

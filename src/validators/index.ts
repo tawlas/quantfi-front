@@ -8,6 +8,7 @@ export const PATTERN_CARD_NUMBER: RegExp = /\d{4} \d{4} \d{4} \d{4}/;
 export const PATTERN_CARD_EXPIRE_DATE: RegExp = /\d{2}\/\d{2}/;
 export const PATTERN_CARD_CVV: RegExp = /\d{3}/;
 export const PATTERN_FULLNAME: RegExp = /^$|^[a-zA-ZčČćĆđĐšŠžŽ-]+ [a-zA-ZčČćĆđĐšŠžŽ-]+$/;
+export const PATTERN_INVESTMENT_AMOUNT: RegExp = /\d{0,4}/;
 
 export const NameValidator = (value: string): boolean => {
   return RegExpValidator(PATTERN_NAME, value);
@@ -51,6 +52,11 @@ export const CardholderNameValidator = (value: string): boolean => {
 
 export const StringValidator = (value: string): boolean => {
   return !!value && value.length > 0;
+};
+
+export const InvestmentAmountValidator = (value: string): boolean => {
+  // return RegExpValidator(PATTERN_INVESTMENT_AMOUNT, value);
+  return true;
 };
 
 const RegExpValidator = (regexp: RegExp, value: string): boolean => {

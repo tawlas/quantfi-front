@@ -8,12 +8,10 @@ import {
   SafeAreaView
 } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import AccountStateDetail from '../../components/AccountStateDetail';
 import { ScrollView } from 'react-native-gesture-handler';
-import InvestmentDetailItem from '../../components/InvestmentDetailItem';
-import HistoryListItem from '../../components/HistoryListItem';
+import HistoryListItem from './HistoryListItem';
 
-export default class HomeScreen extends React.Component {
+export default class BankTransactionList extends React.Component {
   renderSeparator = () => {
     return (
       <View style={{ borderBottomWidth: 1, borderBottomColor: 'white' }}></View>
@@ -37,57 +35,6 @@ export default class HomeScreen extends React.Component {
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView>
           <View style={{ flex: 1, justifyContent: 'space-between' }}>
-            {/* Bloc 1 */}
-            <View style={{ flex: 1, marginBottom: 10 }}>
-              <Text style={styles.textStyle}>Etat de mon compte</Text>
-              <View style={styles.accountStateContainer}>
-                <View style={styles.wrapper}>
-                  <AccountStateDetail title="Solde" amount={300} />
-                  <View
-                    style={{ borderBottomColor: 'white', borderBottomWidth: 1 }}
-                  ></View>
-                  <AccountStateDetail title="Gain" amount={100} />
-                </View>
-              </View>
-              <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate('AccountManagement')
-                }
-              >
-                <Text style={styles.manageAccount}>Gérer mon compte</Text>
-              </TouchableOpacity>
-            </View>
-            {/* Bloc 2 */}
-            <View style={{ flex: 1, marginVertical: 20 }}>
-              <Text style={styles.textStyle}>Mon dernier investissement</Text>
-              <View style={styles.accountStateContainer}>
-                <View style={styles.wrapper}>
-                  <View style={styles.titleContainer}>
-                    <Text style={styles.title}>Expert Patrimoine</Text>
-                    <Text style={styles.date}>20-12-19</Text>
-                  </View>
-                  <View>
-                    <InvestmentDetailItem
-                      textLeft={'Montant Investit'}
-                      textRight={'300'}
-                    />
-                    <InvestmentDetailItem
-                      textLeft={'Rendement'}
-                      textRight={'300'}
-                    />
-                    <InvestmentDetailItem
-                      textLeft={'Encourt'}
-                      textRight={'300'}
-                    />
-                  </View>
-                </View>
-              </View>
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('InvestmentList')}
-              >
-                <Text style={styles.manageAccount}>Voir tout</Text>
-              </TouchableOpacity>
-            </View>
             {/* Bloc 3 */}
             <View style={{ flex: 1, marginVertical: 20 }}>
               <Text style={styles.textStyle}>
@@ -110,13 +57,6 @@ export default class HomeScreen extends React.Component {
                   ItemSeparatorComponent={this.renderSeparator}
                 />
               </View>
-              <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate('BankTransactionHistory')
-                }
-              >
-                <Text style={styles.manageAccount}>Voir tout</Text>
-              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>

@@ -18,10 +18,7 @@ import RadioForm, {
   RadioButtonLabel
 } from 'react-native-simple-radio-button';
 
-const IC_ARR_DOWN = require('../icons/ic_arr_down.png');
-const IC_ARR_UP = require('../icons/ic_arr_up.png');
-
-type Props = {};
+type Props = { labels: string[] };
 export default class RadioButtons extends Component<Props> {
   state = {
     investment: null,
@@ -38,11 +35,11 @@ export default class RadioButtons extends Component<Props> {
   render() {
     const data = [
       {
-        title: 'Expert Patrimoine',
+        title: this.props.labels[0],
         body: 'Rendement de 3%'
       },
       {
-        title: 'Fonds de Fonds',
+        title: this.props.labels[1],
         body: 'Rendement de 5%'
       }
     ];
@@ -68,7 +65,11 @@ export default class RadioButtons extends Component<Props> {
                 buttonSize={15}
                 buttonOuterSize={20}
                 buttonStyle={{ borderWidth: 2 }}
-                buttonWrapStyle={{ marginBottom: 0, top: 10 }}
+                buttonWrapStyle={{
+                  marginBottom: 0,
+                  top: 10,
+                  justifyContent: 'center'
+                }}
               />
               <RadioButtonLabel
                 obj={obj}

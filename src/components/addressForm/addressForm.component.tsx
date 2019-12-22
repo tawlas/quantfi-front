@@ -3,7 +3,8 @@ import { View, ViewProps } from 'react-native';
 import {
   ThemedComponentProps,
   ThemeType,
-  withStyles
+  withStyles,
+  Button
 } from '@ui-kitten/components';
 import { CheckBox } from '@ui-kitten/components';
 import { textStyle, ValidationInput } from '..';
@@ -14,6 +15,7 @@ import {
   PasswordValidator
 } from '../../validators';
 import { AddressFormData } from './type';
+import UploadButton from '../UploadButton';
 
 interface ComponentProps {
   /**
@@ -34,6 +36,8 @@ interface State {
   email: string | undefined;
   password: string | undefined;
   termsAccepted: boolean;
+  blob: any;
+  options: any;
 }
 
 class AddressFormComponent extends React.Component<AddressFormProps, State> {
@@ -43,7 +47,9 @@ class AddressFormComponent extends React.Component<AddressFormProps, State> {
     date: undefined,
     email: undefined,
     password: undefined,
-    termsAccepted: false
+    termsAccepted: false,
+    blob: null,
+    options: null
   };
 
   public componentDidUpdate(prevProps: AddressFormProps, prevState: State) {
@@ -107,6 +113,10 @@ class AddressFormComponent extends React.Component<AddressFormProps, State> {
       : 'Password entered incorrectly';
   };
 
+  storeBlob(blob, options) {
+    this.setState({ blob, options });
+  }
+
   public render(): React.ReactNode {
     const { style, themedStyle, ...restProps } = this.props;
 
@@ -115,8 +125,8 @@ class AddressFormComponent extends React.Component<AddressFormProps, State> {
         <ValidationInput
           style={[themedStyle.input, themedStyle.firstNameInput]}
           textStyle={themedStyle.inputText}
-          placeholder="Ally"
-          label="FIRST NAME"
+          placeholder="Paul"
+          label="PRENOM"
           autoCapitalize="words"
           validator={NameValidator}
           onChangeText={this.onFirstNameInputTextChange}
@@ -125,8 +135,8 @@ class AddressFormComponent extends React.Component<AddressFormProps, State> {
           style={themedStyle.input}
           textStyle={textStyle.paragraph}
           labelStyle={textStyle.label}
-          placeholder="Watsan"
-          label="LAST NAME"
+          placeholder="Hiriart"
+          label="NOM"
           autoCapitalize="words"
           validator={NameValidator}
           onChangeText={this.onLastNameValidationResult}
@@ -135,8 +145,8 @@ class AddressFormComponent extends React.Component<AddressFormProps, State> {
           style={themedStyle.input}
           textStyle={textStyle.paragraph}
           labelStyle={textStyle.label}
-          placeholder="18/10/1995"
-          label="DATE OF BIRTHDAY"
+          placeholder="JJ/MM/AAAA"
+          label="DATE DE NAISSANCE"
           validator={DOBValidator}
           onChangeText={this.onDateInputTextChange}
         />
@@ -144,29 +154,20 @@ class AddressFormComponent extends React.Component<AddressFormProps, State> {
           style={themedStyle.input}
           textStyle={themedStyle.inputText}
           labelStyle={themedStyle.inputLabel}
-          placeholder="ally.watsan@gmail.com"
-          label="EMAIL"
-          validator={EmailValidator}
+          placeholder="24 RUE DU REGARD 92380 GARCHES France"
+          label="ADRESSE COMPLETE"
+          validator={() => true}
           onChangeText={this.onEmailInputTextChange}
         />
-        <ValidationInput
-          style={themedStyle.input}
-          textStyle={textStyle.paragraph}
-          labelStyle={textStyle.label}
-          captionTextStyle={textStyle.paragraph}
-          label="PASSWORD"
-          placeholder="Password"
-          caption={this.passwordCaption()}
-          secureTextEntry={true}
-          validator={PasswordValidator}
-          onChangeText={this.onPasswordInputTextChange}
-        />
+        <View style={{ marginTop: 30 }}>
+          <UploadButton title="Joindre un justificatif de domicile" />
+        </View>
         <CheckBox
           style={themedStyle.termsCheckBox}
           textStyle={themedStyle.termsCheckBoxText}
           checked={this.state.termsAccepted}
           text={
-            'By creating an account, I agree to the Ewa Terms of\nUse and Privacy Policy'
+            "En créeant ce compte, j'accepte les termes et conditions et la politique de confidentialité."
           }
           onChange={this.onTermsAcceptChange}
         />
@@ -179,6 +180,7 @@ export const AddressForm = withStyles(
   AddressFormComponent,
   (theme: ThemeType) => ({
     container: {},
+    button: { marginTop: 30 },
     input: {
       marginTop: 16
     },

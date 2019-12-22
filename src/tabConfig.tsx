@@ -1,7 +1,10 @@
 import React from 'react';
 import HomeScreen from './screens/home/HomeScreen';
+import AccountManagementScreen from './screens/home/AccountManagementScreen';
+import BankTransactionHistoryScreen from './screens/home/BankTransactionHistoryScreen';
 import SettingsScreen from './screens/settings/SettingsScreen';
 import InvestmentListScreen from './screens/investments/InvestmentListScreen';
+import InvestmentDetailScreen from './screens/investments/InvestmentDetailScreen';
 import ProfilScreen from './screens/settings/ProfilScreen';
 import AddNewCardScreen from './screens/settings/addNewCard/AddNewCardScreen';
 import CreditCardScreen from './screens/settings/payment/payment.container';
@@ -58,6 +61,12 @@ const InvestmentStackNavigator = createStackNavigator({
       title: 'Investissements'
     })
   },
+  InvestmentDetail: {
+    screen: InvestmentDetailScreen,
+    navigationOptions: () => ({
+      title: 'Investissements'
+    })
+  },
   InvestmentCreate: {
     screen: InvestmentCreateScreen,
     navigationOptions: () => ({
@@ -71,6 +80,18 @@ const HomeStackNavigator = createStackNavigator({
     screen: HomeScreen,
     navigationOptions: () => ({
       title: 'Accueil'
+    })
+  },
+  AccountManagement: {
+    screen: AccountManagementScreen,
+    navigationOptions: () => ({
+      title: 'Gérer mon compte'
+    })
+  },
+  BankTransactionHistory: {
+    screen: BankTransactionHistoryScreen,
+    navigationOptions: () => ({
+      title: 'Historique de Transactions Bancaires'
     })
   }
 });

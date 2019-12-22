@@ -5,8 +5,10 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  Dimensions
 } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import AccountStateDetail from '../../components/AccountStateDetail';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -38,28 +40,8 @@ export default class HomeScreen extends React.Component {
         <ScrollView>
           <View style={{ flex: 1, justifyContent: 'space-between' }}>
             {/* Bloc 1 */}
-            <View style={{ flex: 1, marginBottom: 10 }}>
-              <Text style={styles.textStyle}>Etat de mon compte</Text>
-              <View style={styles.accountStateContainer}>
-                <View style={styles.wrapper}>
-                  <AccountStateDetail title="Solde" amount={300} />
-                  <View
-                    style={{ borderBottomColor: 'white', borderBottomWidth: 1 }}
-                  ></View>
-                  <AccountStateDetail title="Gain" amount={100} />
-                </View>
-              </View>
-              <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate('AccountManagement')
-                }
-              >
-                <Text style={styles.manageAccount}>Gérer mon compte</Text>
-              </TouchableOpacity>
-            </View>
-            {/* Bloc 2 */}
             <View style={{ flex: 1, marginVertical: 20 }}>
-              <Text style={styles.textStyle}>Mon dernier investissement</Text>
+              <Text style={styles.textStyle}>Expert Patrimoine</Text>
               <View style={styles.accountStateContainer}>
                 <View style={styles.wrapper}>
                   <View style={styles.titleContainer}>
@@ -88,36 +70,57 @@ export default class HomeScreen extends React.Component {
                 <Text style={styles.manageAccount}>Voir tout</Text>
               </TouchableOpacity>
             </View>
-            {/* Bloc 3 */}
-            <View style={{ flex: 1, marginVertical: 20 }}>
-              <Text style={styles.textStyle}>
-                Mon historique de transactions bancaires
-              </Text>
-              <View style={styles.accountStateContainer}>
-                <FlatList
-                  showsVerticalScrollIndicator={true}
-                  data={data}
-                  keyExtractor={result => result.title}
-                  renderItem={({ item }) => {
-                    return (
-                      <View style={{ flex: 1 }}>
-                        <TouchableOpacity>
-                          <HistoryListItem data={item} />
-                        </TouchableOpacity>
-                      </View>
-                    );
-                  }}
-                  ItemSeparatorComponent={this.renderSeparator}
-                />
-              </View>
-              <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate('BankTransactionHistory')
-                }
-              >
-                <Text style={styles.manageAccount}>Voir tout</Text>
-              </TouchableOpacity>
+            {/* Fin Bloc 1 */}
+            {/* Bloc 2 */}
+            {/* <ScrollableTabView renderTabBar={this.renderTabBar}> */}
+            <View>
+              <Text>Bezier Line Chart</Text>
+              <LineChart
+                data={{
+                  labels: [
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June'
+                  ],
+                  datasets: [
+                    {
+                      data: [
+                        Math.random() * 100,
+                        Math.random() * 100,
+                        Math.random() * 100,
+                        Math.random() * 100,
+                        Math.random() * 100,
+                        Math.random() * 100
+                      ]
+                    }
+                  ]
+                }}
+                width={Dimensions.get('window').width} // from react-native
+                height={220}
+                yAxisLabel={'$'}
+                chartConfig={{
+                  backgroundColor: '#e26a00',
+                  backgroundGradientFrom: '#fb8c00',
+                  backgroundGradientTo: '#ffa726',
+                  decimalPlaces: 2, // optional, defaults to 2dp
+                  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                  style: {
+                    borderRadius: 16
+                  }
+                }}
+                bezier
+                style={{
+                  marginVertical: 8,
+                  borderRadius: 16
+                }}
+              />
             </View>
+            {/* </ScrollableTabView> */}
+
+            {/* Fin Bloc 2 */}
           </View>
         </ScrollView>
       </SafeAreaView>

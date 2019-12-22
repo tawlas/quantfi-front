@@ -5,7 +5,10 @@ export const CardNumberFormatter = (value: string): string => {
     .trim();
 };
 
-export const ExpirationDateFormatter = (value: string, stateValue: string): string => {
+export const ExpirationDateFormatter = (
+  value: string,
+  stateValue: string
+): string => {
   let formatted: string = value;
   if (formatted[0] !== '1' && formatted[0] !== '0') {
     formatted = '';
@@ -28,4 +31,21 @@ export const CvvFormatter = (value: string): string => {
 
 export const CardholderNameFormatter = (value: string): string => {
   return value.toLocaleUpperCase();
+};
+
+// export const InvestmentAmountFormatter = ExpirationDateFormatter;
+
+export const InvestmentAmountFormatter = (
+  value: string,
+  stateValue: string
+): string => {
+  let formatted: string = value;
+  formatted = formatted
+    .replace(/\s/g, '')
+    // .replace(/(\d{4})/g, '$1 ')
+    .trim();
+  if (parseInt(formatted, 10) > 5000) {
+    formatted = '5000';
+  }
+  return formatted;
 };

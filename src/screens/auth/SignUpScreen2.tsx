@@ -207,8 +207,8 @@ class SignUpScreen extends React.Component {
     const { blob, options } = this.state;
     await this.storeImage(blob, options);
     Alert.alert('Compte crée avec succès. Veuillez vous connecter à présent');
-    this.signOut();
-    // this.props.navigation.navigate('SignUp3', {});
+    // this.signOut();
+    this.props.navigation.navigate('Address', {});
   }
 
   render() {

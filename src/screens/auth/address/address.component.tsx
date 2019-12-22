@@ -15,6 +15,7 @@ import {
 } from '../../../components';
 import { ArrowForwardIconOutline, HeartIconFill } from '../../../assets/icons';
 import { imageSignUp1Bg, ImageSource } from '../../../assets/images';
+import Auth from '@aws-amplify/auth';
 
 interface ComponentProps {
   onSignUpPress: (formData: AddressFormData) => void;
@@ -29,11 +30,15 @@ export type AddressProps = ThemedComponentProps & ComponentProps;
 
 interface State {
   formData: AddressFormData;
+  blob: null;
+  options: null;
 }
 
 class AddressComponent extends React.Component<AddressProps, State> {
   public state: State = {
-    formData: undefined
+    formData: undefined,
+    blob: null,
+    options: null
   };
 
   private backgroundImage: ImageSource = imageSignUp1Bg;
@@ -84,61 +89,48 @@ class AddressComponent extends React.Component<AddressProps, State> {
       ...themedStyle.signInButtonIcon
     });
   };
+  signOut = async () => {
+    await Auth.signOut()
+      .then(() => {
+        console.log('Sign out complete');
+        this.props.navigation.navigate('AuthLoading');
+      })
+      .catch(err => console.log('Error while signing out!', err));
+  };
+  async storeImage(blob, options) {
+    // const { email } = this.props;
+    const email = 'wattalassane@gmail.com';
+    const key = email;
+    try {
+      const result = await Storage.put(key, blob, options);
+      return {
+        key: result.key
+      };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async onClickNext() {
+    const { blob, options } = this.state;
+    await this.storeImage(blob, options);
+    Alert.alert('Compte crée avec succès. Veuillez vous connecter à présent');
+    // this.props.navigation.navigate('SignUp3', {});
+  }
 
   public render(): React.ReactNode {
     const { themedStyle } = this.props;
 
     return (
       <ScrollableAvoidKeyboard style={themedStyle.container}>
-        {/* <ImageOverlay
-          style={themedStyle.headerContainer}
-          source={this.backgroundImage.imageSource}
-        >
-          <Button
-            appearance="ghost"
-            style={themedStyle.ewaButton}
-            textStyle={themedStyle.ewaButtonText}
-            size="large"
-            activeOpacity={0.75}
-            icon={this.renderEwaButtonIcon}
-            onPress={this.onEwaButtonPress}
-          >
-            EWA
-          </Button>
-          <View style={themedStyle.signUpContainer}>
-            <Text style={themedStyle.signInLabel} category="h4">
-              SIGN UP
-            </Text>
-            <Button
-              style={themedStyle.signInButton}
-              textStyle={themedStyle.signInButtonText}
-              appearance="ghost"
-              size="giant"
-              activeOpacity={0.75}
-              icon={this.renderSignInButtonIcon}
-              onPress={this.onSignInButtonPress}
-            >
-              Sign In
-            </Button>
-          </View>
-        </ImageOverlay> */}
-        {/* <SocialAuth
-          style={themedStyle.socialAuthContainer}
-          hintStyle={themedStyle.socialAuthHint}
-          iconStyle={themedStyle.socialAuthIcon}
-          hint="Sign with a social account"
-          onGooglePress={this.onGoogleButtonPress}
-          onFacebookPress={this.onFacebookButtonPress}
-          onTwitterPress={this.onTwitterButtonPress}
-        /> */}
         <View style={themedStyle.orContainer}>
           <View style={themedStyle.divider} />
           <Text style={themedStyle.orLabel} category="h5">
-            OR
+            Compléter mon profil
           </Text>
           <View style={themedStyle.divider} />
         </View>
-        <Text style={themedStyle.emailSignLabel}>Sign up with Email</Text>
+        {/* <Text style={themedStyle.emailSignLabel}>Sign up with Email</Text> */}
         <AddressForm
           style={themedStyle.formContainer}
           onDataChange={this.onFormDataChange}
@@ -150,7 +142,7 @@ class AddressComponent extends React.Component<AddressProps, State> {
           disabled={!this.state.formData}
           onPress={this.onSignUpButtonPress}
         >
-          SIGN UP
+          Soumettre et finir
         </Button>
       </ScrollableAvoidKeyboard>
     );
@@ -224,7 +216,7 @@ export const Address = withStyles(AddressComponent, (theme: ThemeType) => ({
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 16,
-    marginTop: 52
+    marginTop: 30
   },
   orLabel: {
     marginHorizontal: 8,

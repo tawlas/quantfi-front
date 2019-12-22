@@ -16,8 +16,9 @@ import Slider from '../../components/Slider';
 import { textStyle } from '../../components';
 import { Input, Button } from '@ui-kitten/components';
 
-export default class InvestmentCreateScreen extends React.Component {
+export default class AccountManagementScreen extends React.Component {
   state = {
+    amount: '',
     code: ''
   };
   _onSaveEvent(result) {
@@ -37,12 +38,9 @@ export default class InvestmentCreateScreen extends React.Component {
           onPress={Keyboard.dismiss}
         >
           <View style={styles.container}>
-            <Text style={styles.textStyle}>
-              Choisir un fonds d'investissement
-            </Text>
-            <InvestmentCreateList />
-            <RadioButtons labels={['Expert Patrimoine', 'Fonds de Fonds']} />
-            <Slider action="Placer" />
+            <Text style={styles.textStyle}>Choisir une action</Text>
+            <RadioButtons labels={['Recharger', 'Retirer']} />
+            <Slider action="" />
             <Text style={styles.textStyle}>Confirmation</Text>
             <View style={styles.codeContainer}>
               <Input
@@ -71,7 +69,7 @@ export default class InvestmentCreateScreen extends React.Component {
               showTitleLabel={false}
               viewMode={'portrait'}
             /> */}
-            <Button style={styles.button}>Investir</Button>
+            <Button style={styles.button}>Appliquer</Button>
           </View>
         </TouchableWithoutFeedback>
       </>
