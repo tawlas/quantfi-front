@@ -3,7 +3,9 @@ import HomeScreen from './screens/home/HomeScreen';
 import SettingsScreen from './screens/settings/SettingsScreen';
 import InvestmentListScreen from './screens/investments/InvestmentListScreen';
 import ProfilScreen from './screens/settings/ProfilScreen';
-import CreditCardScreen from './screens/settings/CreditCardScreen';
+import AddNewCardScreen from './screens/settings/addNewCard/AddNewCardScreen';
+import CreditCardScreen from './screens/settings/payment/payment.container';
+import { AddressScreen } from './screens/auth/address/address.container';
 import SecurityScreen from './screens/settings/SecurityScreen';
 import { Icon } from 'native-base';
 import { createStackNavigator } from 'react-navigation-stack';
@@ -26,7 +28,19 @@ const SettingsStackNavigator = createStackNavigator({
   CreditCard: {
     screen: CreditCardScreen,
     navigationOptions: () => ({
-      title: 'Carte de crédit'
+      title: 'Carte Bancaire'
+    })
+  },
+  AddNewCard: {
+    screen: AddNewCardScreen,
+    navigationOptions: () => ({
+      title: 'Nouvelle Carte Bancaire'
+    })
+  },
+  Address: {
+    screen: AddressScreen,
+    navigationOptions: () => ({
+      title: 'Adresse'
     })
   },
   Security: {

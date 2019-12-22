@@ -13,6 +13,8 @@ import {
   Alert
 } from 'react-native';
 import { Container, Item, Input, Icon } from 'native-base';
+import { NavigationStackScreenProps } from 'react-navigation-stack';
+
 // AWS Amplify
 import Auth from '@aws-amplify/auth';
 import SettingsList from 'react-native-settings-list';
@@ -22,7 +24,9 @@ interface Props {
   navigation: any;
 }
 
-export default class SettingsScreen extends React.Component {
+export default class SettingsScreen extends React.Component<
+  NavigationStackScreenProps
+> {
   state = { switchValue: false };
   // Sign out from the app
   signOutAlert = async () => {
@@ -95,11 +99,25 @@ export default class SettingsScreen extends React.Component {
               }}
             />
             <SettingsList.Item
+              icon={
+                <Icon
+                  active
+                  name="person"
+                  style={{ ...styles.imageStyle, color: '#ffdc2b' }}
+                />
+              }
+              hasNavArrow={true}
+              title="Addresse"
+              onPress={() => {
+                this.props.navigation.navigate('Address');
+              }}
+            />
+            <SettingsList.Item
               icon={<Icon active name="card" style={styles.imageStyle} />}
               title="Carte Bancaire"
               // titleInfo=""
               // titleInfoStyle={styles.titleInfoStyle}
-              onPress={() => Alert.alert('Route to Wifi Page')}
+              onPress={() => this.props.navigation.navigate('CreditCard')}
             />
             <SettingsList.Item
               icon={

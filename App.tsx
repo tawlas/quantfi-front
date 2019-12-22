@@ -11,11 +11,18 @@ import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 import { setNavigator } from './src/navigationRef';
 import { Ionicons } from '@expo/vector-icons';
+import { ImageRequireSource } from 'react-native';
+import { IconRegistry } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import reducers from './src/reducers';
 import { ApplicationProvider, Layout } from '@ui-kitten/components';
 import { mapping, light as lightTheme } from '@eva-design/eva';
+import {
+  ApplicationLoader,
+  Assets
+} from './src/appLoader/applicationLoader.component';
 
 import AuthLoadingScreen from './src/screens/auth/AuthLoadingScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
@@ -134,16 +141,44 @@ const styles = StyleSheet.create({
   }
 });
 const App = createAppContainer(navigator);
+
+const fonts: { [key: string]: number } = {
+  'opensans-semibold': require('./assets/fonts/opensans-semibold.ttf'),
+  'opensans-bold': require('./assets/fonts/opensans-bold.ttf'),
+  'opensans-extrabold': require('./assets/fonts/opensans-extra-bold.ttf'),
+  'opensans-light': require('./assets/fonts/opensans-light.ttf'),
+  'opensans-regular': require('./assets/fonts/opensans-regular.ttf')
+};
+// const images: ImageRequireSource[] = [
+//   require('../src/assets/images/source/image-profile-1.jpg'),
+//   require('./assets/images/source/image-profile-2.jpg'),
+//   require('./assets/images/source/image-profile-3.jpg'),
+//   require('./assets/images/source/image-profile-4.jpg'),
+//   require('./assets/images/source/image-profile-5.jpg'),
+//   require('./assets/images/source/image-profile-6.jpg'),
+//   require('./assets/images/source/image-profile-7.jpg'),
+//   require('./assets/images/source/image-profile-8.jpg'),
+//   require('./assets/images/source/image-profile-9.jpg'),
+//   require('./assets/images/source/image-profile-10.jpg')
+// ];
+const assets: Assets = {
+  images: [],
+  fonts: fonts
+};
+
 export default function Root() {
   return (
-    <ApplicationProvider mapping={mapping} theme={lightTheme}>
+    <ApplicationLoader assets={assets}>
+      <IconRegistry icons={EvaIconsPack} />
       <Provider store={createStore(reducers)}>
-        <App
-          ref={navigator => {
-            setNavigator(navigator);
-          }}
-        />
+        <ApplicationProvider mapping={mapping} theme={lightTheme}>
+          <App
+            ref={navigator => {
+              setNavigator(navigator);
+            }}
+          />
+        </ApplicationProvider>
       </Provider>
-    </ApplicationProvider>
+    </ApplicationLoader>
   );
 }
